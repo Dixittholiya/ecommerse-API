@@ -1,10 +1,13 @@
 var user = require("../model/user_register.Model");
 var userCard = require("../model/user_card_Model");
-var product = require("../model/seler_product.Model");
+var product = require("../model/seler_product_Model");
 const bcrypt = require('bcrypt');
+var express = require('express');
+var nodemailer = require('nodemailer');
 
 
 var user_id = "";
+let random = Math.floor(Math.random() * 1000) + 1;
 
 const securePassword = async(password) => {
     try {
@@ -20,19 +23,28 @@ const securePassword = async(password) => {
 // **************************************************** add user 
 const add_user = async(req,res) => {
     try {
-    const spassword = await securePassword(req.body.password);
-    console.log("ok");
-    const obj = {
-        name:req.body.name,
-        email:req.body.email,
-        password:spassword,
-        mobile:req.body.mobile,
-    }
-    const data = await user.create(obj)
-            res.status(200).json({
-                status:"seler data success full add",
-                data
-            })
+        const spassword = await securePassword(req.body.password);
+        const obj = {
+            name:req.body.name,
+            email:req.body.email,
+            password:spassword,
+            mobile:req.body.mobile,
+        }
+        var find_data = await user.find({email:req.body.email});
+            if (find_data == "") {
+                const data = await user.create(obj);
+                res.status(200).json({
+                    status:"user data success full add",
+                    data
+                })
+            }
+            else{
+                res.status(200).json({
+                    status:"your email is already exist...",
+                })
+            }
+
+            
     } catch (error) {
         res.status(200).json({
             status:"invelid"
@@ -104,35 +116,6 @@ const user_logout = async(req,res) => {
 }
 
 
-// **********************************************add user
-// const add_user = async(req,res) => {
-//     var data = await user.create(req.body)
-    
-//     res.status(200).json({
-//         status:"success",
-//         data
-//     })
-// }
-
-// **********************************************login user
-// const user_login = async(req,res) => {
-//     console.log("ok");
-//     var data = await user.find({email:req.body.email})
-//     console.log("data := "+data);
-//     if (data[0].password == req.body.password) {
-//         res.status(200).json({
-//             status:"success full login",
-//             data
-//         })
-//     }
-//     else{
-//         res.status(200).json({
-//             status:"not found data",
-//         })
-//     }
-// }
-
-
 
 // **********************************************user add cards
 const add_card = async(req,res) => {
@@ -181,7 +164,7 @@ const updateCard = async(req,res) =>{
     })
 }
 
-// **********************************************user update cards
+// **********************************************user delete cards
 const deleteCard = async(req,res) => {
     let id1 = req.params.id
     var data = await userCard.findOneAndDelete(id1);
@@ -189,6 +172,75 @@ const deleteCard = async(req,res) => {
         status:"success",
         data
     })
+}
+
+// **********************************************user forget password email
+const forgetPasswordemail = async(req,res,next) => {
+    try {
+        if (user_id == "") {
+            
+            console.log(random);
+            var transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: "dixittholiya96960@gmail.com",
+                    pass: 'xnwgfwoqihanhsyk',
+                }
+            });
+              
+              var mailOptions = {
+                from:"dixittholiya96960@gmail.com",
+                to: req.body.Email,
+                subject: 'Sending Email using Node.js',
+                text: "random = "+random
+              };
+              transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                  console.log(error);
+                } else {
+                  console.log('Email sent: ' + info.response);
+                }
+              });
+            
+              
+        }
+        else{
+            res.status(400).json({
+                status:"you are in login"
+            })
+        }
+    } catch (error) {
+        res.status(400).json({
+            status:"error"
+        })
+    }
+}
+
+// **********************************************user forget password email
+const setpassword = async(req,res) => {
+    try {
+        if (random == req.body.random) {
+            var user_data = await user.find({"email":req.body.email});
+            console.log(user_data);
+            let password0 = req.body.password
+            const objID = {
+                _id : user_data[0]._id
+            }
+            let _id = objID._id
+            console.log(_id);
+            let update = await user.findByIdAndUpdate({_id:_id},{password:password0})
+
+
+            res.status(200).json({
+                status:"password is update success full",
+                password0
+            })
+          }
+    } catch (error) {
+        res.status(200).json({
+            status:"error"
+        })
+    }
 }
 
 
@@ -200,5 +252,7 @@ module.exports = {
     add_card,
     viewCard,
     updateCard,
-    deleteCard
+    deleteCard,
+    forgetPasswordemail,
+    setpassword
 }

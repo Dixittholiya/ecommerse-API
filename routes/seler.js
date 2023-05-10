@@ -1,7 +1,7 @@
 var express = require('express');
-var {add_seler,login_seler,Logout} = require("../controller/seler_data.controllr")
+var {add_seler,login_seler,Logout,product_view,product_update,delete_product} = require("../controller/seler_data.controllr")
 var {add_product} = require("../controller/seler_product_controller")
-var {product_view,product_update,delete_product} = require("../controller/product_view_update_delete")
+// var {product_view,product_update,delete_product} = require("../controller/product_view_update_delete")
 const {view_order,total_order,pending_order,complete_order} = require("../controller/order_controller")
 
 var router = express.Router();

@@ -2,6 +2,7 @@ var seler = require("../model/seler_register.Model");
 const bcrypt = require('bcrypt');
 const config = require("../config/config");
 var jwt = require('jsonwebtoken');
+var product = require("../model/seler_product_Model");
 
 var seller_id = "" ;
 // const logoutData = async(data1) => {
@@ -33,6 +34,7 @@ const securePassword = async(password) => {
 
 // **************************************************** add seler 
 const add_seler = async(req,res) => {
+    try {
     var pending0 = "0"
     var status0 = "0"
     const spassword = await securePassword(req.body.password);
@@ -44,12 +46,27 @@ const add_seler = async(req,res) => {
         pending:pending0,
         status:status0,
     }
-    const data = await seler.create(obj)
-    res.status(200).json({
-        status:"seler data success full add",
-        data
-    })
-}
+    var seler_data = await seler.find({email:req.body.email})
+        if (seler_data == "") {
+            const data = await seler.create(obj)
+            res.status(200).json({
+                status:"seler data success full add",
+                data
+            })
+        } 
+        else{
+            res.status(200).json({
+                status:"your email is already exist..."
+            })
+        }
+    } catch (error) {
+        res.status(200).json({
+            status:"error"
+        })
+    }
+    
+    }
+    
 
 // **************************************************** seler login 
 const login_seler = async(req,res) => {
@@ -110,52 +127,92 @@ const login_seler = async(req,res) => {
     
 }
 
+// var product = require("../model/seler_product_Model");
 
-// let GLOBALa;
-
-// **************************************************************** add seler 
-// const add_seler = async(req,res) => {
-//     var datas = req.body
-//     var pending0 = "0"
-//     var status0 = "0"
-//     const viewdatas = {
-//         pending : pending0,
-//         status : status0,
-//         name : datas?.name,
-//         email : datas?.email,
-//         password : datas?.password,
-//         mobile : datas?.mobile,
-//     }
-//     console.log(viewdatas);
-//     var data = await seler.create(viewdatas)
+// ******************************************product view 
+const product_view = async(req,res) => {
+    var data = await product.find().populate("seler_id")
     
-//     res.status(200).json({
-//         status:"success",
-//         data
-//     })
+    res.status(200).json({
+        status:"success",
+        data
+    })
+}
+
+// ******************************************product update
+const product_update = async(req,res) => {
+    try {
+        if (seller_id == "") {
+            res.status(200).json({
+                status:"please login seler"
+            })
+        }else{
+            var id1 = req.params.id
+            var title = req.body.title
+            var price = req.body.price
+            var discount = req.body.discount
+            var rating = req.body.rating
+            var stock = req.body.stock
+            var brand = req.body.brand
+            var category = req.body.category
+            var image = req.body.image
+            // var data = await product.findByIdAndUpdate({_id : id1},{title : title},{price : price},{discount : discount},{rating : rating},{stock : stock},{brand : brand},{category : category},{image : image},{new : true})
+            var data = await product.findByIdAndUpdate({_id : id1},{title : title})
+            var data = await product.findByIdAndUpdate({_id : id1},{price : price})
+            var data = await product.findByIdAndUpdate({_id : id1},{discount : discount})
+            var data = await product.findByIdAndUpdate({_id : id1},{rating : rating})
+            var data = await product.findByIdAndUpdate({_id : id1},{stock : stock})
+            var data = await product.findByIdAndUpdate({_id : id1},{brand : brand})
+            var data = await product.findByIdAndUpdate({_id : id1},{category : category})
+            var data = await product.findByIdAndUpdate({_id : id1},{image : image})
+            
+            res.status(200).json({
+                status:"success",
+                data
+            })
+        }
+   
+    } catch (error) {
+        res.status(200).json({
+            status:"error"
+        })
+    }
+    
+}
+
+
+// ******************************************product delete
+const delete_product = async (req,res) =>{
+    try {
+        if (seller_id == "") {
+            res.status(200).json({
+                status:"please login seler"
+            })
+        }
+        else{
+            let id1 = req.params.id
+            let data = await product.findByIdAndDelete(id1)
+            res.status(200).json({
+                status:"delete success",
+                data
+            })
+        }
+    } catch (error) {
+        res.status(200).json({
+            status:"error"
+        })
+    }
+    
+}
+
+
+
+// module.exports = {
+//     product_view,
+//     product_update,
+//     delete_product
 // }
 
-// **************************************************************** seler login
-// const login_seler = async(req,res) => {
-//     var data = await seler.find({email:req.body.email})
-//     GLOBALa = data
-//     console.log(GLOBALa);
-//     if (data[0].password == req.body.password) {
-//         var status0 = "1"
-//         var id1 = data[0].id
-//         var data1 = await seler.findByIdAndUpdate({ _id: id1 }, { status: status0 });
-//         res.status(200).json({
-//             status:"success full login",
-//             data1
-//         })
-//     }
-//     else{
-//         res.status(200).json({
-//             status:"not found data",
-//         })
-//     }
-//     return GLOBALa;
-// }
 
 
 
@@ -171,34 +228,14 @@ const login_seler = async(req,res) => {
 
 
 
-// **************************************************************** seler logout
-// const logout_seler = async(req,res) => {
-    // var data = GLOBALa
-    // loginAndLogout = data
-    // console.log("logout seler :- "+data);
-    // var data = await seler.find({email:req.body.email})
-    // if (data[0].password == req.body.password) {
-    //     var status0 = "1"
-    //     console.log("data"+data);
-    //     var id1 = data[0].id
-    //     console.log(id1);
-    //     var data1 = await seler.findByIdAndUpdate({ _id: id1 }, { status: status0 });
-    //     res.status(200).json({
-    //         status:"success full login",
-    //         data
-    //     })
-    // }
-    // else{
-    //     res.status(200).json({
-    //         status:"not found data",
-    //     })
-    // }
-// }
 
 
 
 module.exports = {
     add_seler,
     login_seler,
-    Logout
+    Logout,
+    product_view,
+    product_update,
+    delete_product
 }

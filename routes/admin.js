@@ -1,5 +1,5 @@
 var express = require('express');
-var {addAdmin,adminUserDetails,adminSelerDetails,adminSelerProductDetails,adminTotalOrderDetails,adminTotalUserRegister,adminTotalSelerRegister,adminViewSelerRegisterPending,adminSelerPendingOrderConfirmation,adminViewSelerLogin} =require("../controller/admin_data_controller")
+var {addAdmin,adminUserDetails,adminSelerDetails,adminSelerProductDetails,adminTotalOrderDetails,adminTotalUserRegister,adminTotalSelerRegister,adminViewSelerRegisterPending,adminSelerPendingOrderConfirmation,adminViewSelerLogin,blog_seler} =require("../controller/admin_data_controller")
 var router = express.Router();
 
 /* GET home page. */
@@ -32,9 +32,12 @@ router.get("/admin_view_total_seler_login",adminTotalSelerRegister)
 router.get("/admin_view_total_seler_pending/",adminViewSelerRegisterPending)
 
 // ********************************************************** Admin seler pending order confirmation
-router.post("/admin_seler_pending_order_confirmation/:id",adminSelerPendingOrderConfirmation)
+router.post("/admin_seler_pending_order_confirmation/",adminSelerPendingOrderConfirmation)
 
 // ********************************************************** Admin view seler login 
 router.post("/admin_view_seler_login/",adminViewSelerLogin)
+
+// ********************************************************** Admin blog seler
+router.post("/admin_blog_seler/",blog_seler)
 
 module.exports = router;

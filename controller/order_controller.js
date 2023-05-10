@@ -1,28 +1,68 @@
 var order = require("../model/order_Model");
 var completeorder = require("../model/complete_order_Model");
 var return_order = require("../model/return_order_Model");
-var product = require("../model/seler_product.Model");
+var product = require("../model/seler_product_Model");
 
 
 // **********************************************total order 
 const now_order = async(req,res) =>{
+    try {
     let data1 = req.body
+    let find = await product.findById(req.body.product_id)
+    const objData = {
+        orderPrice : find?.price,
+        orderdiscount : find?.discount
+    }
+
+    let totalOrder = req.body.orders;
+    let totalPrice = totalOrder*objData.orderPrice*objData.orderdiscount/100;
+
     pending0 = "0";
-    let read_data1 = {
+    const read_data1 = {
         pending : pending0,
         user_id : data1?.user_id,
         product_id : data1?.product_id,
         seler_id : data1?.seler_id,
         orders : data1?.orders,
+        orderPrice:totalPrice
     };
-    console.log(read_data1);
+   
+
     var data = await order.create(read_data1)
 
-    res.status(200).json({
-        status:"success your order",
-        data
-    })
+        res.status(200).json({
+            status:"success your order",
+            data,
+        })
+    } catch (error) {
+        res.status(200).json({
+            status:"error"
+        })
+    }
+    
 }
+
+
+// // **********************************************total order 
+// const now_order = async(req,res) =>{
+//     let data1 = req.body
+//     pending0 = "0";
+//     let read_data1 = {
+//         pending : pending0,
+//         user_id : data1?.user_id,
+//         product_id : data1?.product_id,
+//         seler_id : data1?.seler_id,
+//         orders : data1?.orders,
+//     };
+   
+
+//     var data = await order.create(read_data1)
+
+//     res.status(200).json({
+//         status:"success your order",
+//         data,
+//     })
+// }
 
 // **********************************************view order 
 const view_order = async(req,res) =>{

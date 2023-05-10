@@ -1,13 +1,14 @@
 var admin = require("../model/add_admin_Model");
 var user = require("../model/user_register.Model");
 var seler = require("../model/seler_register.Model");
-var selerProduct = require("../model/seler_product.Model");
+var selerProduct = require("../model/seler_product_Model");
 var order = require("../model/order_Model");
-var confirmationseler = require("../model/confirmation_seler_Model")
+var confirmationseler = require("../model/confirmation_seler_Model");
+var blog = require("../model/blog_user_and_seler")
 // var user = require("../model/user_register.Model")
 
 // ******************************************************* add admin 
-const addAdmin  = async(req,res) => {
+const addAdmin = async(req,res) => {
     
     var data = await admin.create(req.body)
     res.status(200).json({
@@ -89,7 +90,7 @@ const adminViewSelerRegisterPending = async(req,res) => {
 
 // ******************************************************* Admin seler pending order confirmation
 const adminSelerPendingOrderConfirmation = async(req,res) => {
-    let _id = req.params.id
+    let _id = req.body._id
     console.log(_id);
     let data = await seler.findById(_id)
     console.log(data);
@@ -99,14 +100,13 @@ const adminSelerPendingOrderConfirmation = async(req,res) => {
         email : data?.email,
         password : data?.password,
         mobile : data?.mobile,
-        confirmation : confirmation,
+        confirmation : confirmation
     }
     var data1 = await confirmationseler.create(obj);
     var delete1 = await seler.findByIdAndDelete(_id);
     res.status(200).json({
         status:"success",
-        data1,
-        delete1
+        data1
     })
 }
 
@@ -122,6 +122,33 @@ const adminViewSelerLogin = async(req,res) => {
 
 }
 
+const blog_seler = async(req,res) => {
+    try {
+    let _id = req.body._id
+    var findSeler = await confirmationseler.findById(_id);
+    console.log(findSeler);
+    let idBlog = "blog"
+    let obj = {
+        name : findSeler?.name,
+        email : findSeler?.email,
+        password : findSeler?.password,
+        mobile : findSeler?.mobile,
+        idBlog : idBlog
+    }
+    let data = await blog.create(obj);
+    let delete1 = await confirmationseler.findByIdAndDelete(_id)
+        res.status(200).json({
+            status:"seler is blog",
+            data
+        })
+    } catch (error) {
+        res.status(200).json({
+            status:"error"
+        })
+    }
+    
+}
+
 
 module.exports = {
     addAdmin,
@@ -133,5 +160,6 @@ module.exports = {
     adminTotalSelerRegister,
     adminViewSelerRegisterPending,
     adminSelerPendingOrderConfirmation,
-    adminViewSelerLogin
+    adminViewSelerLogin,
+    blog_seler
 }

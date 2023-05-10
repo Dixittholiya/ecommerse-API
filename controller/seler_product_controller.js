@@ -1,4 +1,4 @@
-var product = require("../model/seler_product.Model");
+var product = require("../model/seler_product_Model");
 
 
 const add_product = async(req,res) => {

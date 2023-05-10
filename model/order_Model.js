@@ -14,6 +14,7 @@ const seler_data = new Schema({
         ref: 'seler_data'
     },
     orders: {type: Number},
+    orderPrice: {type : Number},
     pending: {type : String },
   });
 

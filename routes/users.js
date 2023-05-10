@@ -1,7 +1,7 @@
 var express = require('express');
 const {add_user,user_login,user_logout} = require("../controller/user_data.controller");
 const {now_order,return1_order,product_view,search_product} = require("../controller/order_controller");
-const {add_card,viewCard,updateCard,deleteCard} = require("../controller/user_data.controller")
+const {add_card,viewCard,updateCard,deleteCard,forgetPasswordemail,setpassword} = require("../controller/user_data.controller")
 
 var router = express.Router();
 
@@ -39,8 +39,14 @@ router.get("/view_Card/",viewCard);
 // *******************************************user update card
 router.put("/update_card/:id",updateCard);
 
-// *******************************************user update card
+// *******************************************user delete card
 router.delete("/delete_card/:id",deleteCard);
+
+// *******************************************user forget passwordemail
+router.post("/user_forget_passwordemail/",forgetPasswordemail);
+
+// *******************************************user forget passwordemail
+router.post("/user_set_forget_password/",setpassword);
 
 
 
